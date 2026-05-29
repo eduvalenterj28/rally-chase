@@ -1,6 +1,7 @@
-from tela.screen import janela
-from sprites.sprites import *
+from window import *
+from sprites import *
 
 while True:
-    telaStart.draw()
+    janela.set_background_color([000,000,200])
+    car.draw()
     janela.update()
