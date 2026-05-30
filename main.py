@@ -1,7 +1,15 @@
 from window import *
 from sprites import *
+from fundo import *
 
 while True:
-    janela.set_background_color([000,000,200])
+
+    dt = janela.delta_time()
+
+    mover_fundos(dt)
+
+    desenhar_fundos()
     car.draw()
+
+    # atualiza a janela
     janela.update()

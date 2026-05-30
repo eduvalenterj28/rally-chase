@@ -1,6 +1,6 @@
 from PPlay.sprite import *
 
-car = Sprite("car.png")
-fundo1 = Sprite("fundo1.png")
-fundo2 = Sprite("fundo2.png")
-fundo1 = Sprite("fundo3.png")
+car = Sprite("sprites/car.png")
+fundo1 = Sprite("sprites/fundo1.png")
+fundo2 = Sprite("sprites/fundo2.png")
+fundo3 = Sprite("sprites/fundo3.png")
