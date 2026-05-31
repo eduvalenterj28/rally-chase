@@ -3,6 +3,7 @@ from sprites import *
 
 # velocidade da pista
 velocidade_fundo = 300
+velocidade_inicial = 300
 
 ALTURA = fundo1.height
 
