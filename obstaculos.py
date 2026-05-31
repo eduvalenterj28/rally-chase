@@ -136,7 +136,7 @@ def mover_obstaculos(dt):
 
         if colisao:
 
-            tempo_reduzido = 3
+            tempo_reduzido = 1.5
 
             # reduz velocidade do fundo
             fundo.velocidade_fundo = VELOCIDADE_REDUZIDA
