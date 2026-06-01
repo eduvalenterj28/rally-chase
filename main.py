@@ -1,24 +1,37 @@
 from window import *
-from sprites import *
 from fundo import *
 from car import *
 from obstaculos import *
 from timer import *
+import menu
 
 while True:
 
     dt = janela.delta_time()
 
-    mover_fundos(dt)
-    mover_obstaculos(dt)
-    mover_carro(dt)
+    # ======================
+    # MENU
+    # ======================
 
-    atualizar_timer(dt)
+    if menu.estado == menu.MENU:
 
-    desenhar_fundos()
-    desenhar_obstaculos()
-    desenhar_carro()
-    desenhar_timer(janela)
+        menu.desenhar_menu()
+        menu.atualizar_menu()
 
-    # atualiza a janela
+    # ======================
+    # JOGO
+    # ======================
+
+    elif menu.estado == menu.JOGO:
+
+        mover_fundos(dt)
+        mover_carro(dt)
+        mover_obstaculos(dt)
+        atualizar_timer(dt)
+
+        desenhar_fundos()
+        desenhar_obstaculos()
+        desenhar_carro()
+        desenhar_timer(janela)
+
     janela.update()
