@@ -1,3 +1,5 @@
+from config import *
+
 # ======================
 # TEMPO
 # ======================
@@ -14,22 +16,19 @@ def atualizar_timer(dt):
 
 def desenhar_timer(janela):
 
-    # calcula tempo
     minutos = int(tempo_total // 60)
     segundos = int(tempo_total % 60)
     milisegundos = int((tempo_total % 1) * 1000)
 
-    # formato MM:SS:MMM
     texto = (
         f"{minutos:02d}:"
         f"{segundos:02d}:"
         f"{milisegundos:03d}"
     )
 
-    # canto superior direito
     janela.draw_text(
         texto,
-        780,
+        LARGURA_JANELA - 220,
         20,
         size=35,
         color=(255, 255, 255),

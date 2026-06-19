@@ -1,17 +1,20 @@
 from PPlay.sprite import *
 
-#carros
+# carros
 car = Sprite("sprites/car.png")
 
-#pista
+# pista
 fundo1 = Sprite("sprites/fundo1.png")
 fundo2 = Sprite("sprites/fundo2.png")
 fundo3 = Sprite("sprites/fundo3.png")
 
-#menu
+# menu
 menuInicial = Sprite("sprites/menuInicial.png")
 
-#obstaculos
+# obstaculos
+# obstaculos
 pedra = Sprite("sprites/pedra.png")
-arvore = Sprite("sprites/arvore.png")
+pedra2 = Sprite("sprites/pedra2.png")
+buraco = Sprite("sprites/buraco.png")
+tronco = Sprite("sprites/tronco.png")
 barreira = Sprite("sprites/barreira.png")

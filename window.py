@@ -1,5 +1,10 @@
 from PPlay.window import *
+from config import *
 
-janela = Window(1000, 800)
+janela = Window(
+    LARGURA_JANELA,
+    ALTURA_JANELA
+)
+
 janela.set_title("Rally Chase")
-janela.set_background_color([000,000,200])
+janela.set_background_color([0, 0, 200])

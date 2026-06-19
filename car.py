@@ -1,51 +1,55 @@
 from sprites import *
 from keys import *
+from config import *
 import fundo
 
-# posição inicial
-car.x = (1000 - car.width) / 2
-car.y = 800 - car.height + 10
+# ======================
+# POSIÇÃO INICIAL
+# ======================
 
-# velocidade lateral
-velocidade_carro = 400
+car.x = (LARGURA_JANELA - car.width) / 2
+car.y = ALTURA_JANELA - car.height + 10
 
-# piscar
+# ======================
+# PISCA
+# ======================
+
 pisca_timer = 0
-intervalo_pisca = 0.12
 
+# ======================
+# MOVIMENTO
+# ======================
 
 def mover_carro(dt):
 
     global pisca_timer
 
-    # esquerda
     if pressionada(LEFT):
-        car.x -= velocidade_carro * dt
+        car.x -= VELOCIDADE_CARRO * dt
 
-    # direita
     if pressionada(RIGHT):
-        car.x += velocidade_carro * dt
+        car.x += VELOCIDADE_CARRO * dt
 
-    # limites
     if car.x < 0:
         car.x = 0
 
-    if car.x > 1000 - car.width:
-        car.x = 1000 - car.width
+    if car.x > LARGURA_JANELA - car.width:
+        car.x = LARGURA_JANELA - car.width
 
-    # controla timer do pisca
-    if fundo.velocidade_fundo < 300:
+    if fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL:
         pisca_timer += dt
     else:
         pisca_timer = 0
 
+# ======================
+# DESENHO
+# ======================
 
 def desenhar_carro():
 
-    # pisca enquanto velocidade reduzida
-    if fundo.velocidade_fundo < 300:
+    if fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL:
 
-        if int(pisca_timer / intervalo_pisca) % 2 == 0:
+        if int(pisca_timer / INTERVALO_PISCA) % 2 == 0:
             car.draw()
 
     else:

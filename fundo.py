@@ -1,9 +1,10 @@
 from PPlay.sprite import *
 from sprites import *
+from config import *
 
 # velocidade da pista
-velocidade_fundo = 300
-velocidade_inicial = 300
+velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
+velocidade_inicial = VELOCIDADE_FUNDO_INICIAL
 
 ALTURA = fundo1.height
 
@@ -20,12 +21,10 @@ fundo3.y = -2 * ALTURA
 
 def mover_fundos(dt):
 
-    # movimento
     fundo1.y += velocidade_fundo * dt
     fundo2.y += velocidade_fundo * dt
     fundo3.y += velocidade_fundo * dt
 
-    # reposicionamento
     if fundo1.y >= ALTURA:
         fundo1.y = fundo3.y - ALTURA
 

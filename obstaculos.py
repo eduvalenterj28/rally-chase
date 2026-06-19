@@ -1,8 +1,11 @@
 from PPlay.sprite import *
 from sprites import *
 from car import *
+from config import *
 import fundo
 import random
+
+from formacoes import *
 
 # ======================
 # LISTA DE OBSTACULOS
@@ -10,59 +13,154 @@ import random
 
 obstaculos = []
 
-# ======================
-# CONFIGURACOES
-# ======================
-
-VELOCIDADE_NORMAL = 300
-VELOCIDADE_REDUZIDA = 120
-
 tempo_reduzido = 0
 
-# spawn
 tempo_spawn = 0
-intervalo_min = 1.0
-intervalo_max = 2.2
+
 proximo_spawn = random.uniform(
-    intervalo_min,
-    intervalo_max
+    INTERVALO_SPAWN_MIN,
+    INTERVALO_SPAWN_MAX
 )
 
-# limites da pista
-# ajuste fino depois se precisar
-PISTA_X_MIN = 260
-PISTA_X_MAX = 740
-
-
 # ======================
-# CRIAR OBSTACULO
+# TRONCO ESPECIAL
 # ======================
 
-def criar_obstaculo():
+def criar_tronco():
 
-    modelos = [
-        "sprites/pedra.png",
-        "sprites/barreira.png"
-    ]
+    obs = Sprite("sprites/tronco.png")
 
-    caminho = random.choice(modelos)
+    lado_livre = random.choice([
+        "esquerda",
+        "direita"
+    ])
 
-    obs = Sprite(caminho)
+    if lado_livre == "esquerda":
 
-    # posição aleatória dentro da pista
-    obs.x = random.randint(
-        int(PISTA_X_MIN),
-        int(PISTA_X_MAX - obs.width)
-    )
+        obs.x = 390
 
-    # nasce acima da tela
+    else:
+
+        obs.x = 260
+
     obs.y = -obs.height
 
-    obstaculos.append(obs)
-
+    obstaculos.append(
+        {
+            "sprite": obs,
+            "tipo": "tronco"
+        }
+    )
 
 # ======================
-# MOVIMENTO + COLISAO
+# FORMACAO NORMAL
+# ======================
+
+def criar_formacao():
+
+    formacao = obter_formacao()
+
+    tipos = [
+
+        ("sprites/pedra.png", "pedra"),
+        ("sprites/pedra.png", "pedra"),
+
+        ("sprites/pedra2.png", "pedra2"),
+
+        ("sprites/barreira.png", "barreira"),
+        ("sprites/barreira.png", "barreira"),
+
+        ("sprites/buraco.png", "buraco")
+
+    ]
+
+    arquivo, tipo = random.choice(tipos)
+
+    y_inicial = -100
+
+    for linha in range(len(formacao)):
+
+        for faixa in range(3):
+
+            if formacao[linha][faixa] == 1:
+
+                obs = Sprite(arquivo)
+
+                obs.x = (
+                    FAIXAS[faixa]
+                    - obs.width / 2
+                )
+
+                obs.y = (
+                    y_inicial
+                    - linha * ESPACAMENTO_Y
+                )
+
+                obstaculos.append(
+                    {
+                        "sprite": obs,
+                        "tipo": tipo
+                    }
+                )
+
+# ======================
+# HITBOX DOS OBSTACULOS
+# ======================
+
+def obter_hitbox_obstaculo(tipo):
+
+    # PEDRA
+
+    if tipo == "pedra":
+
+        return (
+            45,
+            40
+        )
+
+    # PEDRA 2
+
+    if tipo == "pedra2":
+
+        return (
+            45,
+            35
+        )
+
+    # BARREIRA
+
+    if tipo == "barreira":
+
+        return (
+            30,
+            50
+        )
+
+    # BURACO
+
+    if tipo == "buraco":
+
+        return (
+            30,
+            25
+        )
+
+    # TRONCO
+
+    if tipo == "tronco":
+
+        return (
+            90,
+            25
+        )
+
+    return (
+        25,
+        25
+    )
+
+# ======================
+# MOVIMENTO
 # ======================
 
 def mover_obstaculos(dt):
@@ -71,79 +169,100 @@ def mover_obstaculos(dt):
     global proximo_spawn
     global tempo_reduzido
 
-    # ------------------
-    # SPAWN
-    # ------------------
-
     tempo_spawn += dt
 
     if tempo_spawn >= proximo_spawn:
 
-        criar_obstaculo()
+        if random.random() < CHANCE_TRONCO:
 
-        tempo_spawn = 0
+            criar_tronco()
 
-        proximo_spawn = random.uniform(
-            intervalo_min,
-            intervalo_max
-        )
+            tempo_spawn = 0
 
-    # ------------------
-    # MOVIMENTO
-    # ------------------
+            proximo_spawn = random.uniform(
+                INTERVALO_TRONCO_MIN,
+                INTERVALO_TRONCO_MAX
+            )
 
-    for obs in obstaculos[:]:
+        else:
 
-        # usa mesma velocidade do fundo
+            criar_formacao()
+
+            tempo_spawn = 0
+
+            proximo_spawn = random.uniform(
+                INTERVALO_SPAWN_MIN,
+                INTERVALO_SPAWN_MAX
+            )
+
+    # ======================
+    # MOVIMENTO + COLISAO
+    # ======================
+
+    for item in obstaculos[:]:
+
+        obs = item["sprite"]
+        tipo = item["tipo"]
+
         obs.y += fundo.velocidade_fundo * dt
 
-        # remove ao sair da tela
-        if obs.y >= 800:
+        if obs.y >= ALTURA_JANELA + 200:
 
-            obstaculos.remove(obs)
+            obstaculos.remove(item)
             continue
 
-        # ------------------
-        # COLISAO AJUSTADA
-        # ------------------
+        # ======================
+        # HITBOX DO CARRO
+        # ======================
 
-        margem_carro_x = 35
-        margem_carro_y = 25
+        car_left = car.x + HITBOX_X
+        car_right = car_left + HITBOX_W
 
-        margem_obs_x = 25
-        margem_obs_y = 25
+        car_top = car.y + HITBOX_Y
+        car_bottom = car_top + HITBOX_H
+
+        # ======================
+        # HITBOX DO OBSTACULO
+        # ======================
+
+        margem_obs_x, margem_obs_y = (
+            obter_hitbox_obstaculo(tipo)
+        )
+
+        obs_left = obs.x + margem_obs_x
+        obs_right = obs.x + obs.width - margem_obs_x
+
+        obs_top = obs.y + margem_obs_y
+        obs_bottom = obs.y + obs.height - margem_obs_y
 
         colisao = (
 
-            car.x + margem_carro_x <
-            obs.x + obs.width - margem_obs_x
+            car_left < obs_right
 
             and
 
-            car.x + car.width - margem_carro_x >
-            obs.x + margem_obs_x
+            car_right > obs_left
 
             and
 
-            car.y + margem_carro_y <
-            obs.y + obs.height - margem_obs_y
+            car_top < obs_bottom
 
             and
 
-            car.y + car.height - margem_carro_y >
-            obs.y + margem_obs_y
+            car_bottom > obs_top
         )
 
         if colisao:
 
-            tempo_reduzido = 1.5
+            tempo_reduzido = TEMPO_REDUZIDO
 
-            # reduz velocidade do fundo
-            fundo.velocidade_fundo = VELOCIDADE_REDUZIDA
+            fundo.velocidade_fundo = (
+                VELOCIDADE_REDUZIDA
+            )
 
-    # ------------------
-    # EFEITO DE SLOW
-    # ------------------
+    # ======================
+    # RECUPERACAO
+    # ======================
 
     if tempo_reduzido > 0:
 
@@ -151,15 +270,17 @@ def mover_obstaculos(dt):
 
     else:
 
-        # recuperação gradual
-        if fundo.velocidade_fundo < VELOCIDADE_NORMAL:
+        if fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL:
 
-            fundo.velocidade_fundo += 80 * dt
+            fundo.velocidade_fundo += (
+                RECUPERACAO_VELOCIDADE * dt
+            )
 
-            if fundo.velocidade_fundo > VELOCIDADE_NORMAL:
+            if fundo.velocidade_fundo > VELOCIDADE_FUNDO_INICIAL:
 
-                fundo.velocidade_fundo = VELOCIDADE_NORMAL
-
+                fundo.velocidade_fundo = (
+                    VELOCIDADE_FUNDO_INICIAL
+                )
 
 # ======================
 # DESENHO
@@ -167,7 +288,9 @@ def mover_obstaculos(dt):
 
 def desenhar_obstaculos():
 
-    for obs in obstaculos:
+    for item in obstaculos:
+
+        obs = item["sprite"]
 
         obs.set_position(
             round(obs.x),
