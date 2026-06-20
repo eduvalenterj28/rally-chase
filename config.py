@@ -11,14 +11,6 @@ ALTURA_JANELA = 800
 
 VELOCIDADE_CARRO = 400
 
-# ======================
-# HITBOX DO CARRO
-# ======================
-
-# Sprite: 176x264
-#
-# Hitbox mais arcade e justa
-
 HITBOX_X = 40
 HITBOX_Y = 30
 
@@ -31,14 +23,21 @@ HITBOX_H = 190
 
 VELOCIDADE_FUNDO_INICIAL = 300
 
-# ======================
-# EFEITO DE COLISAO
-# ======================
-
 VELOCIDADE_REDUZIDA = 120
 TEMPO_REDUZIDO = 1.5
 
 RECUPERACAO_VELOCIDADE = 80
+
+
+# ======================
+# SAIDA DA PISTA
+# ======================
+
+VELOCIDADE_FORA_PISTA = 180
+
+RECUPERACAO_FORA_PISTA = 60
+
+PORCENTAGEM_FORA_PISTA = 0.30
 
 # ======================
 # SPAWN

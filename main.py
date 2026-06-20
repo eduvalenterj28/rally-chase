@@ -1,6 +1,7 @@
 from window import *
 from fundo import *
 from car import *
+from fase import *
 from obstaculos import *
 from timer import *
 import menu
@@ -25,6 +26,7 @@ while True:
     elif menu.estado == menu.JOGO:
 
         mover_fundos(dt)
+        atualizar_fase(dt, velocidade_fundo)
         mover_carro(dt)
         mover_obstaculos(dt)
         atualizar_timer(dt)

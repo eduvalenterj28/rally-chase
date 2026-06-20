@@ -12,7 +12,6 @@ fundo3 = Sprite("sprites/fundo3.png")
 menuInicial = Sprite("sprites/menuInicial.png")
 
 # obstaculos
-# obstaculos
 pedra = Sprite("sprites/pedra.png")
 pedra2 = Sprite("sprites/pedra2.png")
 buraco = Sprite("sprites/buraco.png")

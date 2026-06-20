@@ -2,6 +2,7 @@ from PPlay.sprite import *
 from sprites import *
 from car import *
 from config import *
+from dificuldade import *
 import fundo
 import random
 
@@ -17,14 +18,13 @@ tempo_reduzido = 0
 
 tempo_spawn = 0
 
+spawn_min, spawn_max = obter_intervalo_spawn()
+
 proximo_spawn = random.uniform(
-    INTERVALO_SPAWN_MIN,
-    INTERVALO_SPAWN_MAX
+    spawn_min,
+    spawn_max
 )
 
-# ======================
-# TRONCO ESPECIAL
-# ======================
 
 def criar_tronco():
 
@@ -173,27 +173,24 @@ def mover_obstaculos(dt):
 
     if tempo_spawn >= proximo_spawn:
 
-        if random.random() < CHANCE_TRONCO:
+        chance_tronco = obter_chance_tronco()
+
+        if random.random() < chance_tronco:
 
             criar_tronco()
-
-            tempo_spawn = 0
-
-            proximo_spawn = random.uniform(
-                INTERVALO_TRONCO_MIN,
-                INTERVALO_TRONCO_MAX
-            )
 
         else:
 
             criar_formacao()
 
-            tempo_spawn = 0
+        tempo_spawn = 0
 
-            proximo_spawn = random.uniform(
-                INTERVALO_SPAWN_MIN,
-                INTERVALO_SPAWN_MAX
-            )
+        spawn_min, spawn_max = obter_intervalo_spawn()
+
+        proximo_spawn = random.uniform(
+            spawn_min,
+            spawn_max
+        )
 
     # ======================
     # MOVIMENTO + COLISAO
