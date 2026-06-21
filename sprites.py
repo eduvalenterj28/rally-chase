@@ -79,3 +79,5 @@ numero6 = Sprite("sprites/6.png")
 numero7 = Sprite("sprites/7.png")
 numero8 = Sprite("sprites/8.png")
 numero9 = Sprite("sprites/9.png")
+
+pressSpace = Sprite("sprites/pressSpace.png")

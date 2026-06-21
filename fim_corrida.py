@@ -5,7 +5,6 @@ import mundo
 import timer
 
 from sprites import *
-
 from numeros import *
 
 from fundo import resetar_fundos
@@ -30,25 +29,18 @@ def gerar_posicao():
 
     if tempo <= 120:
         posicao = 1
-
     elif tempo <= 130:
         posicao = 2
-
     elif tempo <= 140:
         posicao = 3
-
     elif tempo <= 150:
         posicao = 4
-
     elif tempo <= 160:
         posicao = 5
-
     elif tempo <= 170:
         posicao = 6
-
     elif tempo <= 180:
         posicao = 7
-
     else:
         posicao = 8
 
@@ -62,19 +54,19 @@ def desenhar_fim(janela):
 
     minutos = int(timer.tempo_total // 60)
     segundos = int(timer.tempo_total % 60)
-    milisegundos = int(
-        (timer.tempo_total % 1) * 1000
-    )
+    milisegundos = int((timer.tempo_total % 1) * 1000)
 
     tempo_texto = (
         f"{minutos:02d}"
+        f":"
         f"{segundos:02d}"
+        f":"
         f"{milisegundos:03d}"
     )
 
-    # ------------------
+    # ======================
     # POSIÇÃO
-    # ------------------
+    # ======================
 
     desenhar_numero(
         str(posicao),
@@ -82,14 +74,11 @@ def desenhar_fim(janela):
         500
     )
 
-    # ------------------
-    # TEMPO
-    # ------------------
-
+    # 🔥 ALTERADO: tempo mais pra cima
     desenhar_numero(
         tempo_texto,
         505,
-        500
+        460   # antes era 500
     )
 
 # ======================
@@ -103,7 +92,6 @@ def atualizar_fim():
         mundo.avancar_fase()
 
         if mundo.jogo_finalizado():
-
             return
 
         resetar_fundos()
@@ -113,7 +101,6 @@ def atualizar_fim():
         fase.resetar_fase()
 
         timer.tempo_total = 0
-
         fase.resultado_processado = False
 
         menu.estado = menu.TELA_FASE

@@ -5,6 +5,7 @@ import menu
 import mundo
 
 tempo_tela = 0
+blink_timer = 0
 
 def obter_tela():
 
@@ -40,6 +41,19 @@ def desenhar_tela_fase():
 
     obter_tela().draw()
 
+    global blink_timer
+
+    blink_timer += 1
+
+    if (blink_timer // 20) % 2 == 0:
+
+        pressSpace.set_position(
+            350,
+            670
+        )
+
+        pressSpace.draw()
+
 
 def atualizar_tela_fase(dt):
 
@@ -47,13 +61,10 @@ def atualizar_tela_fase(dt):
 
     tempo_tela += dt
 
-    # espera meio segundo antes de aceitar espaço
-
     if tempo_tela < 0.5:
         return
 
     if pressionada(SPACE):
 
         tempo_tela = 0
-
         menu.estado = menu.JOGO

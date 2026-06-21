@@ -4,8 +4,7 @@ from PPlay.sprite import *
 # CONFIGURAÇÃO
 # ======================
 
-# antes era fixo e grande demais para 30x30
-ESPACAMENTO = 24
+ESPACAMENTO = 26
 
 # ======================
 # DESENHAR TEXTO NUMÉRICO
@@ -36,23 +35,27 @@ def desenhar_numero(texto, x, y):
 
         elif caractere == "%":
 
-            sprite = Sprite(
-                "sprites/porCento.png"
-            )
+            sprite = Sprite("sprites/porCento.png")
 
             sprite.set_position(x, y)
             sprite.draw()
 
-            x += 22  # menor que número para ficar mais compacto
+            x += sprite.width - 4
 
         # ------------------
-        # DOIS PONTOS
+        # DOIS PONTOS (LEVEMENTE MAIS ALTO)
         # ------------------
 
         elif caractere == ":":
 
-            # agora ocupa menos espaço visual
-            x += 10
+            sprite = Sprite("sprites/2pontos.png")
+
+            # 🔥 sobe levemente só o :
+            sprite.set_position(x, y - 3)
+
+            sprite.draw()
+
+            x += sprite.width
 
         # ------------------
         # ESPAÇO
@@ -60,4 +63,4 @@ def desenhar_numero(texto, x, y):
 
         elif caractere == " ":
 
-            x += 12
+            x += 14
