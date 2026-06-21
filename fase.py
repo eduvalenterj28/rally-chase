@@ -123,3 +123,9 @@ def resetar_fase():
     resultado_processado = False
 
     desacelerando = False
+
+def texto_porcentagem():
+
+    return str(
+        obter_porcentagem()
+    )

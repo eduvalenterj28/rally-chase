@@ -2,8 +2,9 @@ from sprites import *
 from keys import *
 
 MENU = 0
-JOGO = 1
-FIM = 2
+TELA_FASE = 1
+JOGO = 2
+FIM = 3
 
 estado = MENU
 
@@ -13,7 +14,8 @@ def atualizar_menu():
     global estado
 
     if pressionada(SPACE):
-        estado = JOGO
+
+        estado = TELA_FASE
 
 
 def desenhar_menu():

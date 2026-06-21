@@ -6,6 +6,8 @@ import timer
 
 from sprites import *
 
+from numeros import *
+
 from fundo import resetar_fundos
 from car import resetar_carro
 from obstaculos import resetar_obstaculos
@@ -65,27 +67,29 @@ def desenhar_fim(janela):
     )
 
     tempo_texto = (
-        f"{minutos:02d}:"
-        f"{segundos:02d}:"
+        f"{minutos:02d}"
+        f"{segundos:02d}"
         f"{milisegundos:03d}"
     )
 
-    janela.draw_text(
-        f"{posicao}º",
+    # ------------------
+    # POSIÇÃO
+    # ------------------
+
+    desenhar_numero(
+        str(posicao),
         355,
-        500,
-        size=78,
-        color=(255, 200, 0),
-        font_name="Arial Black"
+        500
     )
 
-    janela.draw_text(
+    # ------------------
+    # TEMPO
+    # ------------------
+
+    desenhar_numero(
         tempo_texto,
         505,
-        500,
-        size=42,
-        color=(255, 140, 40),
-        font_name="Consolas"
+        500
     )
 
 # ======================
@@ -112,4 +116,4 @@ def atualizar_fim():
 
         fase.resultado_processado = False
 
-        menu.estado = menu.JOGO
+        menu.estado = menu.TELA_FASE
