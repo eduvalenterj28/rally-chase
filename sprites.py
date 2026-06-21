@@ -1,20 +1,50 @@
 from PPlay.sprite import *
 
-# carros
+# ======================
+# CARRO
+# ======================
+
 car = Sprite("sprites/car.png")
 
-# pista
-fundo1 = Sprite("sprites/fundo1.png")
-fundo2 = Sprite("sprites/fundo2.png")
-fundo3 = Sprite("sprites/fundo3.png")
+# ======================
+# FUNDOS DOS MUNDOS
+# ======================
 
-# menu
+terra1 = Sprite("sprites/terra1.png")
+terra2 = Sprite("sprites/terra2.png")
+terra3 = Sprite("sprites/terra3.png")
+
+# scroll atual
+
+fundo1 = Sprite("sprites/terra1.png")
+fundo2 = Sprite("sprites/terra1.png")
+fundo3 = Sprite("sprites/terra1.png")
+
+# ======================
+# MENU
+# ======================
+
 menuInicial = Sprite("sprites/menuInicial.png")
 fimDeJogo = Sprite("sprites/fimDeJogo.png")
 
-# obstaculos
-pedra = Sprite("sprites/pedra.png")
-pedra2 = Sprite("sprites/pedra2.png")
+# ======================
+# OBSTÁCULOS
+# ======================
+
+
 buraco = Sprite("sprites/buraco.png")
 tronco = Sprite("sprites/tronco.png")
 barreira = Sprite("sprites/barreira.png")
+
+pedra = Sprite("sprites/pedra.png")
+pedra2 = Sprite("sprites/pedra2.png")
+
+# pedras neve
+
+pedraNeve1 = Sprite("sprites/pedraNeve1.png")
+pedraNeve2 = Sprite("sprites/pedraNeve2.png")
+
+# pedras deserto
+
+pedraDeserto1 = Sprite("sprites/pedraDeserto1.png")
+pedraDeserto2 = Sprite("sprites/pedraDeserto2.png")

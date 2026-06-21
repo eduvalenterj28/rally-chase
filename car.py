@@ -1,7 +1,9 @@
 from sprites import *
 from keys import *
 from config import *
+
 import fundo
+import fase
 
 # ======================
 # POSIÇÃO INICIAL
@@ -80,9 +82,10 @@ def mover_carro(dt):
         car.x = 0
 
     if car.x > LARGURA_JANELA - car.width:
+
         car.x = (
-            LARGURA_JANELA
-            - car.width
+            LARGURA_JANELA -
+            car.width
         )
 
     # ------------------
@@ -91,16 +94,10 @@ def mover_carro(dt):
 
     if carro_fora_da_pista():
 
-        # transição suave da opacidade
-
         opacidade_carro -= 300 * dt
 
         if opacidade_carro < 170:
             opacidade_carro = 170
-
-        # reduz velocidade apenas
-        # se não estiver mais lenta
-        # por colisão
 
         if fundo.velocidade_fundo > VELOCIDADE_FORA_PISTA:
 
@@ -116,8 +113,6 @@ def mover_carro(dt):
                 )
 
     else:
-
-        # volta gradualmente
 
         opacidade_carro += 300 * dt
 
@@ -149,7 +144,12 @@ def mover_carro(dt):
     # PISCA DE COLISÃO
     # ------------------
 
-    if fundo.velocidade_fundo < VELOCIDADE_REDUZIDA + 1:
+    if (
+        fundo.velocidade_fundo <
+        VELOCIDADE_REDUZIDA + 1
+        and
+        not fase.desacelerando
+    ):
 
         pisca_timer += dt
 
@@ -158,21 +158,56 @@ def mover_carro(dt):
         pisca_timer = 0
 
 # ======================
+# RESET
+# ======================
+
+def resetar_carro():
+
+    global opacidade_carro
+    global pisca_timer
+
+    car.x = (
+        LARGURA_JANELA -
+        car.width
+    ) / 2
+
+    car.y = (
+        ALTURA_JANELA -
+        car.height +
+        10
+    )
+
+    opacidade_carro = 255
+
+    pisca_timer = 0
+
+# ======================
 # DESENHO
 # ======================
 
 def desenhar_carro():
 
     try:
+
         car.set_alpha(
             int(opacidade_carro)
         )
+
     except:
+
         pass
 
-    # pisca apenas em colisão
+    # ------------------
+    # Pisca somente
+    # durante colisões
+    # ------------------
 
-    if fundo.velocidade_fundo <= VELOCIDADE_REDUZIDA + 1:
+    if (
+        fundo.velocidade_fundo <=
+        VELOCIDADE_REDUZIDA + 1
+        and
+        not fase.desacelerando
+    ):
 
         if (
             int(

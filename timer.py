@@ -1,4 +1,5 @@
 from config import *
+import fase
 
 # ======================
 # TEMPO
@@ -26,11 +27,28 @@ def desenhar_timer(janela):
         f"{milisegundos:03d}"
     )
 
+    # ------------------
+    # TEMPO
+    # ------------------
+
     janela.draw_text(
         texto,
         LARGURA_JANELA - 220,
         20,
         size=35,
+        color=(255, 255, 255),
+        font_name="Arial"
+    )
+
+    # ------------------
+    # PROGRESSO
+    # ------------------
+
+    janela.draw_text(
+        f"{fase.obter_porcentagem()}%",
+        20,
+        20,
+        size=30,
         color=(255, 255, 255),
         font_name="Arial"
     )

@@ -5,6 +5,7 @@ from obstaculos import *
 from timer import *
 from fim_corrida import *
 
+import fundo
 import menu
 import fase
 
@@ -27,11 +28,25 @@ while True:
 
     elif menu.estado == menu.JOGO:
 
+        # ------------------
+        # DESACELERAÇÃO FINAL
+        # ------------------
+
+        if fase.desacelerando:
+
+            fundo.velocidade_fundo -= 200 * dt
+
+            if fundo.velocidade_fundo <= 0:
+
+                fundo.velocidade_fundo = 0
+
+                fase.fase_concluida = True
+
         mover_fundos(dt)
 
         fase.atualizar_fase(
             dt,
-            velocidade_fundo
+            fundo.velocidade_fundo
         )
 
         mover_carro(dt)
@@ -66,5 +81,6 @@ while True:
     elif menu.estado == menu.FIM:
 
         desenhar_fim(janela)
+        atualizar_fim()
 
     janela.update()

@@ -1,5 +1,14 @@
-from sprites import *
+from keys import *
+import menu
+import fase
+import mundo
 import timer
+
+from sprites import *
+
+from fundo import resetar_fundos
+from car import resetar_carro
+from obstaculos import resetar_obstaculos
 
 # ======================
 # POSIÇÃO FINAL
@@ -41,7 +50,6 @@ def gerar_posicao():
     else:
         posicao = 8
 
-
 # ======================
 # DESENHO
 # ======================
@@ -62,10 +70,6 @@ def desenhar_fim(janela):
         f"{milisegundos:03d}"
     )
 
-    # ------------------
-    # POSIÇÃO
-    # ------------------
-
     janela.draw_text(
         f"{posicao}º",
         355,
@@ -75,10 +79,6 @@ def desenhar_fim(janela):
         font_name="Arial Black"
     )
 
-    # ------------------
-    # TEMPO
-    # ------------------
-
     janela.draw_text(
         tempo_texto,
         505,
@@ -87,3 +87,29 @@ def desenhar_fim(janela):
         color=(255, 140, 40),
         font_name="Consolas"
     )
+
+# ======================
+# PRÓXIMA FASE
+# ======================
+
+def atualizar_fim():
+
+    if pressionada(SPACE):
+
+        mundo.avancar_fase()
+
+        if mundo.jogo_finalizado():
+
+            return
+
+        resetar_fundos()
+        resetar_carro()
+        resetar_obstaculos()
+
+        fase.resetar_fase()
+
+        timer.tempo_total = 0
+
+        fase.resultado_processado = False
+
+        menu.estado = menu.JOGO

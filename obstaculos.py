@@ -1,8 +1,12 @@
 from PPlay.sprite import *
+import fase
+import mundo
+
 from sprites import *
 from car import *
 from config import *
 from dificuldade import *
+
 import fundo
 import random
 
@@ -25,10 +29,78 @@ proximo_spawn = random.uniform(
     spawn_max
 )
 
+# ======================
+# PEDRAS DO MUNDO
+# ======================
+
+def obter_pedras_mundo():
+
+    if mundo.mundo_atual == 1:
+
+        return (
+            "sprites/pedra.png",
+            "sprites/pedra2.png"
+        )
+
+    elif mundo.mundo_atual == 2:
+
+        return (
+            "sprites/pedraNeve1.png",
+            "sprites/pedraNeve2.png"
+        )
+
+    else:
+
+        return (
+            "sprites/pedraDeserto1.png",
+            "sprites/pedraDeserto2.png"
+        )
+
+# ======================
+# BURACO DO MUNDO
+# ======================
+
+def obter_buraco_mundo():
+
+    if mundo.mundo_atual == 1:
+
+        return "sprites/buraco.png"
+
+    elif mundo.mundo_atual == 2:
+
+        return "sprites/buracoNeve.png"
+
+    else:
+
+        return "sprites/buracoDeserto.png"
+
+# ======================
+# TRONCO DO MUNDO
+# ======================
+
+def obter_tronco_mundo():
+
+    if mundo.mundo_atual == 1:
+
+        return "sprites/tronco.png"
+
+    elif mundo.mundo_atual == 2:
+
+        return "sprites/troncoNeve.png"
+
+    else:
+
+        return "sprites/troncoDeserto.png"
+
+# ======================
+# TRONCO
+# ======================
 
 def criar_tronco():
 
-    obs = Sprite("sprites/tronco.png")
+    obs = Sprite(
+        obter_tronco_mundo()
+    )
 
     lado_livre = random.choice([
         "esquerda",
@@ -60,17 +132,25 @@ def criar_formacao():
 
     formacao = obter_formacao()
 
+    pedra1, pedra2 = (
+        obter_pedras_mundo()
+    )
+
+    buraco = (
+        obter_buraco_mundo()
+    )
+
     tipos = [
 
-        ("sprites/pedra.png", "pedra"),
-        ("sprites/pedra.png", "pedra"),
+        (pedra1, "pedra"),
+        (pedra1, "pedra"),
 
-        ("sprites/pedra2.png", "pedra2"),
+        (pedra2, "pedra2"),
 
         ("sprites/barreira.png", "barreira"),
         ("sprites/barreira.png", "barreira"),
 
-        ("sprites/buraco.png", "buraco")
+        (buraco, "buraco")
 
     ]
 
@@ -109,16 +189,12 @@ def criar_formacao():
 
 def obter_hitbox_obstaculo(tipo):
 
-    # PEDRA
-
     if tipo == "pedra":
 
         return (
             45,
             40
         )
-
-    # PEDRA 2
 
     if tipo == "pedra2":
 
@@ -127,8 +203,6 @@ def obter_hitbox_obstaculo(tipo):
             35
         )
 
-    # BARREIRA
-
     if tipo == "barreira":
 
         return (
@@ -136,16 +210,12 @@ def obter_hitbox_obstaculo(tipo):
             50
         )
 
-    # BURACO
-
     if tipo == "buraco":
 
         return (
             30,
             25
         )
-
-    # TRONCO
 
     if tipo == "tronco":
 
@@ -171,7 +241,11 @@ def mover_obstaculos(dt):
 
     tempo_spawn += dt
 
-    if tempo_spawn >= proximo_spawn:
+    if (
+        fase.obter_porcentagem() < 98
+        and
+        tempo_spawn >= proximo_spawn
+    ):
 
         chance_tronco = obter_chance_tronco()
 
@@ -185,7 +259,9 @@ def mover_obstaculos(dt):
 
         tempo_spawn = 0
 
-        spawn_min, spawn_max = obter_intervalo_spawn()
+        spawn_min, spawn_max = (
+            obter_intervalo_spawn()
+        )
 
         proximo_spawn = random.uniform(
             spawn_min,
@@ -201,16 +277,14 @@ def mover_obstaculos(dt):
         obs = item["sprite"]
         tipo = item["tipo"]
 
-        obs.y += fundo.velocidade_fundo * dt
+        obs.y += (
+            fundo.velocidade_fundo * dt
+        )
 
         if obs.y >= ALTURA_JANELA + 200:
 
             obstaculos.remove(item)
             continue
-
-        # ======================
-        # HITBOX DO CARRO
-        # ======================
 
         car_left = car.x + HITBOX_X
         car_right = car_left + HITBOX_W
@@ -218,19 +292,29 @@ def mover_obstaculos(dt):
         car_top = car.y + HITBOX_Y
         car_bottom = car_top + HITBOX_H
 
-        # ======================
-        # HITBOX DO OBSTACULO
-        # ======================
-
         margem_obs_x, margem_obs_y = (
             obter_hitbox_obstaculo(tipo)
         )
 
-        obs_left = obs.x + margem_obs_x
-        obs_right = obs.x + obs.width - margem_obs_x
+        obs_left = (
+            obs.x + margem_obs_x
+        )
 
-        obs_top = obs.y + margem_obs_y
-        obs_bottom = obs.y + obs.height - margem_obs_y
+        obs_right = (
+            obs.x +
+            obs.width -
+            margem_obs_x
+        )
+
+        obs_top = (
+            obs.y + margem_obs_y
+        )
+
+        obs_bottom = (
+            obs.y +
+            obs.height -
+            margem_obs_y
+        )
 
         colisao = (
 
@@ -251,7 +335,9 @@ def mover_obstaculos(dt):
 
         if colisao:
 
-            tempo_reduzido = TEMPO_REDUZIDO
+            tempo_reduzido = (
+                TEMPO_REDUZIDO
+            )
 
             fundo.velocidade_fundo = (
                 VELOCIDADE_REDUZIDA
@@ -267,13 +353,21 @@ def mover_obstaculos(dt):
 
     else:
 
-        if fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL:
+        if (
+            not fase.desacelerando
+            and
+            fundo.velocidade_fundo <
+            VELOCIDADE_FUNDO_INICIAL
+        ):
 
             fundo.velocidade_fundo += (
                 RECUPERACAO_VELOCIDADE * dt
             )
 
-            if fundo.velocidade_fundo > VELOCIDADE_FUNDO_INICIAL:
+            if (
+                fundo.velocidade_fundo >
+                VELOCIDADE_FUNDO_INICIAL
+            ):
 
                 fundo.velocidade_fundo = (
                     VELOCIDADE_FUNDO_INICIAL
@@ -295,3 +389,27 @@ def desenhar_obstaculos():
         )
 
         obs.draw()
+
+# ======================
+# RESETAR FASE
+# ======================
+
+def resetar_obstaculos():
+
+    global tempo_spawn
+    global proximo_spawn
+    global tempo_reduzido
+
+    obstaculos.clear()
+
+    tempo_spawn = 0
+    tempo_reduzido = 0
+
+    spawn_min, spawn_max = (
+        obter_intervalo_spawn()
+    )
+
+    proximo_spawn = random.uniform(
+        spawn_min,
+        spawn_max
+    )
