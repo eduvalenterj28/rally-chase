@@ -10,6 +10,7 @@ fundo3 = Sprite("sprites/fundo3.png")
 
 # menu
 menuInicial = Sprite("sprites/menuInicial.png")
+fimDeJogo = Sprite("sprites/fimDeJogo.png")
 
 # obstaculos
 pedra = Sprite("sprites/pedra.png")

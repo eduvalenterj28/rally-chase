@@ -1,12 +1,14 @@
 # ======================
-# FASE 1
+# PROGRESSO DA FASE
 # ======================
 
 distancia = 0
 
-DISTANCIA_FASE = 36000
+DISTANCIA_FASE = 3000
 
 fase_concluida = False
+
+resultado_processado = False
 
 
 # ======================
@@ -26,7 +28,10 @@ def atualizar_fase(dt, velocidade):
     if distancia >= DISTANCIA_FASE:
 
         distancia = DISTANCIA_FASE
+
         fase_concluida = True
+
+        print("FASE CONCLUIDA")
 
 
 # ======================
@@ -46,6 +51,10 @@ def resetar_fase():
 
     global distancia
     global fase_concluida
+    global resultado_processado
 
     distancia = 0
+
     fase_concluida = False
+
+    resultado_processado = False

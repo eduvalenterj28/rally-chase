@@ -3,6 +3,7 @@ from keys import *
 
 MENU = 0
 JOGO = 1
+FIM = 2
 
 estado = MENU
 
