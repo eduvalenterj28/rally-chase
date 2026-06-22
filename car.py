@@ -5,92 +5,51 @@ from config import *
 import fundo
 import fase
 
-# ======================
-# POSIÇÃO INICIAL
-# ======================
-
 car.x = (LARGURA_JANELA - car.width) / 2
 car.y = ALTURA_JANELA - car.height + 10
 
-# ======================
-# PISCA (COLISÃO)
-# ======================
-
 pisca_timer = 0
-
-# ======================
-# OPACIDADE
-# ======================
-
 opacidade_carro = 255
-
-# ======================
-# FORA DA PISTA
-# ======================
 
 def carro_fora_da_pista():
 
     car_left = car.x + HITBOX_X
     car_right = car_left + HITBOX_W
 
-    fora_esquerda = max(
-        0,
-        PISTA_X_MIN - car_left
-    )
+    fora_esquerda = max(0, PISTA_X_MIN - car_left)
+    fora_direita = max(0, car_right - PISTA_X_MAX)
 
-    fora_direita = max(
-        0,
-        car_right - PISTA_X_MAX
-    )
+    fora_total = fora_esquerda + fora_direita
 
-    fora_total = (
-        fora_esquerda +
-        fora_direita
-    )
-
-    limite = (
-        HITBOX_W *
-        PORCENTAGEM_FORA_PISTA
-    )
+    limite = HITBOX_W * PORCENTAGEM_FORA_PISTA
 
     return fora_total >= limite
-
-# ======================
-# MOVIMENTO
-# ======================
 
 def mover_carro(dt):
 
     global pisca_timer
     global opacidade_carro
 
-    # ------------------
-    # MOVIMENTO LATERAL
-    # ------------------
+    velocidade = VELOCIDADE_CARRO
+
+    if fundo.velocidade_fundo <= 0 or fase.fase_concluida:
+        return
+
+    if fase.desacelerando:
+        fator = max(0.2, fundo.velocidade_fundo / VELOCIDADE_FUNDO_INICIAL)
+        velocidade *= fator
 
     if pressionada(LEFT):
-        car.x -= VELOCIDADE_CARRO * dt
+        car.x -= velocidade * dt
 
     if pressionada(RIGHT):
-        car.x += VELOCIDADE_CARRO * dt
-
-    # ------------------
-    # LIMITES DA JANELA
-    # ------------------
+        car.x += velocidade * dt
 
     if car.x < 0:
         car.x = 0
 
     if car.x > LARGURA_JANELA - car.width:
-
-        car.x = (
-            LARGURA_JANELA -
-            car.width
-        )
-
-    # ------------------
-    # FORA DA PISTA
-    # ------------------
+        car.x = LARGURA_JANELA - car.width
 
     if carro_fora_da_pista():
 
@@ -103,14 +62,8 @@ def mover_carro(dt):
 
             fundo.velocidade_fundo -= 250 * dt
 
-            if (
-                fundo.velocidade_fundo <
-                VELOCIDADE_FORA_PISTA
-            ):
-
-                fundo.velocidade_fundo = (
-                    VELOCIDADE_FORA_PISTA
-                )
+            if fundo.velocidade_fundo < VELOCIDADE_FORA_PISTA:
+                fundo.velocidade_fundo = VELOCIDADE_FORA_PISTA
 
     else:
 
@@ -120,35 +73,18 @@ def mover_carro(dt):
             opacidade_carro = 255
 
         if (
-            fundo.velocidade_fundo >
-            VELOCIDADE_REDUZIDA
-            and
-            fundo.velocidade_fundo <
-            VELOCIDADE_FUNDO_INICIAL
+            fundo.velocidade_fundo > VELOCIDADE_REDUZIDA
+            and fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL
         ):
 
-            fundo.velocidade_fundo += (
-                RECUPERACAO_FORA_PISTA * dt
-            )
+            fundo.velocidade_fundo += RECUPERACAO_FORA_PISTA * dt
 
-            if (
-                fundo.velocidade_fundo >
-                VELOCIDADE_FUNDO_INICIAL
-            ):
-
-                fundo.velocidade_fundo = (
-                    VELOCIDADE_FUNDO_INICIAL
-                )
-
-    # ------------------
-    # PISCA DE COLISÃO
-    # ------------------
+            if fundo.velocidade_fundo > VELOCIDADE_FUNDO_INICIAL:
+                fundo.velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
 
     if (
-        fundo.velocidade_fundo <
-        VELOCIDADE_REDUZIDA + 1
-        and
-        not fase.desacelerando
+        fundo.velocidade_fundo < VELOCIDADE_REDUZIDA + 1
+        and not fase.desacelerando
     ):
 
         pisca_timer += dt
@@ -157,67 +93,31 @@ def mover_carro(dt):
 
         pisca_timer = 0
 
-# ======================
-# RESET
-# ======================
-
 def resetar_carro():
 
     global opacidade_carro
     global pisca_timer
 
-    car.x = (
-        LARGURA_JANELA -
-        car.width
-    ) / 2
-
-    car.y = (
-        ALTURA_JANELA -
-        car.height +
-        10
-    )
+    car.x = (LARGURA_JANELA - car.width) / 2
+    car.y = ALTURA_JANELA - car.height + 10
 
     opacidade_carro = 255
-
     pisca_timer = 0
-
-# ======================
-# DESENHO
-# ======================
 
 def desenhar_carro():
 
     try:
-
-        car.set_alpha(
-            int(opacidade_carro)
-        )
-
+        car.set_alpha(int(opacidade_carro))
     except:
-
         pass
 
-    # ------------------
-    # Pisca somente
-    # durante colisões
-    # ------------------
-
     if (
-        fundo.velocidade_fundo <=
-        VELOCIDADE_REDUZIDA + 1
-        and
-        not fase.desacelerando
+        fundo.velocidade_fundo <= VELOCIDADE_REDUZIDA + 1
+        and not fase.desacelerando
     ):
 
-        if (
-            int(
-                pisca_timer /
-                INTERVALO_PISCA
-            ) % 2 == 0
-        ):
-
+        if int(pisca_timer / INTERVALO_PISCA) % 2 == 0:
             car.draw()
 
     else:
-
         car.draw()

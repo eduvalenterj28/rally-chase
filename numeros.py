@@ -50,7 +50,7 @@ def desenhar_numero(texto, x, y):
 
             sprite = Sprite("sprites/2pontos.png")
 
-            # 🔥 sobe levemente só o :
+            
             sprite.set_position(x, y - 3)
 
             sprite.draw()

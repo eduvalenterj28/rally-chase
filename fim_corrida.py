@@ -3,6 +3,7 @@ import menu
 import fase
 import mundo
 import timer
+import obstaculos
 
 from sprites import *
 from numeros import *
@@ -11,42 +12,29 @@ from fundo import resetar_fundos
 from car import resetar_carro
 from obstaculos import resetar_obstaculos
 
-# ======================
-# POSIÇÃO FINAL
-# ======================
-
 posicao = 1
-
-# ======================
-# CALCULA POSIÇÃO
-# ======================
 
 def gerar_posicao():
 
     global posicao
 
-    tempo = timer.tempo_total
+    erros = obstaculos.erros
 
-    if tempo <= 120:
+    if erros == 0:
         posicao = 1
-    elif tempo <= 130:
-        posicao = 2
-    elif tempo <= 140:
-        posicao = 3
-    elif tempo <= 150:
-        posicao = 4
-    elif tempo <= 160:
-        posicao = 5
-    elif tempo <= 170:
-        posicao = 6
-    elif tempo <= 180:
-        posicao = 7
-    else:
-        posicao = 8
 
-# ======================
-# DESENHO
-# ======================
+    elif erros <= 2:
+        posicao = 2
+
+    elif erros <= 5:
+        posicao = 3
+
+    elif erros <= 7:
+        posicao = 4
+
+    else:
+        posicao = 5
+
 
 def desenhar_fim(janela):
 
@@ -65,25 +53,43 @@ def desenhar_fim(janela):
     )
 
     # ======================
-    # POSIÇÃO
+    # POSIÇÃO (AJUSTADA)
+    # ======================
+
+    sprite_pos = None
+
+    if posicao == 1:
+        sprite_pos = Sprite("sprites/1maior.png")
+
+    elif posicao == 2:
+        sprite_pos = Sprite("sprites/2maior.png")
+
+    elif posicao == 3:
+        sprite_pos = Sprite("sprites/3maior.png")
+
+    elif posicao == 4:
+        sprite_pos = Sprite("sprites/4maior.png")
+
+    else:
+        sprite_pos = Sprite("sprites/5maior.png")
+
+    sprite_pos.set_position(
+        312,
+        450
+    )
+
+    sprite_pos.draw()
+
+    # ======================
+    # TEMPO
     # ======================
 
     desenhar_numero(
-        str(posicao),
-        355,
-        500
-    )
-
-    # 🔥 ALTERADO: tempo mais pra cima
-    desenhar_numero(
         tempo_texto,
         505,
-        460   # antes era 500
+        460
     )
 
-# ======================
-# PRÓXIMA FASE
-# ======================
 
 def atualizar_fim():
 

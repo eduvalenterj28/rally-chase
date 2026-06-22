@@ -15,9 +15,9 @@ while True:
 
     dt = janela.delta_time()
 
-    # ======================
+    
     # MENU
-    # ======================
+     
 
     if menu.estado == menu.MENU:
 
@@ -66,7 +66,6 @@ while True:
 
         desenhar_timer(janela)
 
-        # 🔥 FIX FINAL: % garantido via sprite correto
         desenhar_numero(
             str(fase.obter_porcentagem()) + "%",
             40,
