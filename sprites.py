@@ -21,11 +21,13 @@ fundo2 = Sprite("sprites/terra1.png")
 fundo3 = Sprite("sprites/terra1.png")
 
 # ======================
-# MENU
+# MENU / TELAS
 # ======================
 
 menuInicial = Sprite("sprites/menuInicial.png")
 fimDeJogo = Sprite("sprites/fimDeJogo.png")
+pause = Sprite("sprites/pause.png")
+fimDoCampeonato = Sprite("sprites/fimDoCampeonato.png")
 
 # ======================
 # TELAS DE FASE
@@ -46,7 +48,6 @@ faseDeserto3 = Sprite("sprites/faseDeserto3.png")
 # ======================
 # OBSTÁCULOS
 # ======================
-
 
 buraco = Sprite("sprites/buraco.png")
 tronco = Sprite("sprites/tronco.png")

@@ -4,6 +4,7 @@ import fase
 import mundo
 import timer
 import obstaculos
+import tela_fase
 
 from sprites import *
 from numeros import *
@@ -13,6 +14,10 @@ from car import resetar_carro
 from obstaculos import resetar_obstaculos
 
 posicao = 1
+
+space_travado_fim = False
+space_travado_fim_campeonato = False
+
 
 def gerar_posicao():
 
@@ -53,7 +58,7 @@ def desenhar_fim(janela):
     )
 
     # ======================
-    # POSIÇÃO (AJUSTADA)
+    # POSIÇÃO
     # ======================
 
     sprite_pos = None
@@ -93,20 +98,85 @@ def desenhar_fim(janela):
 
 def atualizar_fim():
 
+    global space_travado_fim
+    global space_travado_fim_campeonato
+
     if pressionada(SPACE):
 
-        mundo.avancar_fase()
+        if not space_travado_fim:
 
-        if mundo.jogo_finalizado():
-            return
+            mundo.avancar_fase()
 
-        resetar_fundos()
-        resetar_carro()
-        resetar_obstaculos()
+            if mundo.jogo_finalizado():
 
-        fase.resetar_fase()
+                menu.estado = menu.FIM_CAMPEONATO
 
-        timer.tempo_total = 0
-        fase.resultado_processado = False
+                space_travado_fim = True
+                space_travado_fim_campeonato = True
 
-        menu.estado = menu.TELA_FASE
+                return
+
+            resetar_fundos()
+            resetar_carro()
+            resetar_obstaculos()
+
+            fase.resetar_fase()
+
+            timer.tempo_total = 0
+            fase.resultado_processado = False
+
+            tela_fase.tempo_tela = 0
+
+            menu.estado = menu.TELA_FASE
+
+            space_travado_fim = True
+
+    else:
+
+        space_travado_fim = False
+
+
+def desenhar_fim_campeonato():
+
+    fimDoCampeonato.draw()
+
+
+def resetar_jogo_completo():
+
+    global space_travado_fim
+    global space_travado_fim_campeonato
+
+    mundo.resetar_mundo()
+
+    resetar_fundos()
+    resetar_carro()
+    resetar_obstaculos()
+
+    fase.resetar_fase()
+
+    timer.tempo_total = 0
+    fase.resultado_processado = False
+
+    tela_fase.tempo_tela = 0
+    tela_fase.blink_timer = 0
+
+    space_travado_fim = False
+    space_travado_fim_campeonato = True
+
+    menu.space_travado_menu = True
+    menu.estado = menu.MENU
+
+
+def atualizar_fim_campeonato():
+
+    global space_travado_fim_campeonato
+
+    if pressionada(SPACE):
+
+        if not space_travado_fim_campeonato:
+
+            resetar_jogo_completo()
+
+    else:
+
+        space_travado_fim_campeonato = False

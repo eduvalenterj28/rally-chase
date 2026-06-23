@@ -6,18 +6,42 @@ from timer import *
 from fim_corrida import *
 from tela_fase import *
 from numeros import *
+from sprites import *
+from keys import *
 
 import fundo
 import menu
 import fase
 
+esc_travado = False
+
 while True:
 
     dt = janela.delta_time()
 
-    
+    # ======================
+    # CONTROLE DE PAUSE
+    # ======================
+
+    if pressionada(ESC):
+
+        if not esc_travado:
+
+            if menu.estado == menu.JOGO:
+                menu.estado = menu.PAUSE
+
+            elif menu.estado == menu.PAUSE:
+                menu.estado = menu.JOGO
+
+            esc_travado = True
+
+    else:
+
+        esc_travado = False
+
+    # ======================
     # MENU
-     
+    # ======================
 
     if menu.estado == menu.MENU:
 
@@ -85,6 +109,14 @@ while True:
             menu.estado = menu.FIM
 
     # ======================
+    # PAUSE
+    # ======================
+
+    elif menu.estado == menu.PAUSE:
+
+        pause.draw()
+
+    # ======================
     # FIM DE CORRIDA
     # ======================
 
@@ -92,5 +124,14 @@ while True:
 
         desenhar_fim(janela)
         atualizar_fim()
+
+    # ======================
+    # FIM DO CAMPEONATO
+    # ======================
+
+    elif menu.estado == menu.FIM_CAMPEONATO:
+
+        desenhar_fim_campeonato()
+        atualizar_fim_campeonato()
 
     janela.update()

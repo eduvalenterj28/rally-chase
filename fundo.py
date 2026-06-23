@@ -7,8 +7,13 @@ import mundo
 # VELOCIDADE
 # ======================
 
-velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
-velocidade_inicial = VELOCIDADE_FUNDO_INICIAL
+def obter_velocidade_inicial_atual():
+
+    return VELOCIDADE_FUNDO_INICIAL * mundo.obter_multiplicador_velocidade()
+
+
+velocidade_fundo = obter_velocidade_inicial_atual()
+velocidade_inicial = obter_velocidade_inicial_atual()
 
 # ======================
 # CARREGAR FUNDO
@@ -138,7 +143,9 @@ def desenhar_fundos():
 def resetar_fundos():
 
     global velocidade_fundo
+    global velocidade_inicial
 
-    velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
+    velocidade_inicial = obter_velocidade_inicial_atual()
+    velocidade_fundo = velocidade_inicial
 
     carregar_fundo_mundo()

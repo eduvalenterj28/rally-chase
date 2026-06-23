@@ -4,12 +4,19 @@ from config import *
 
 import fundo
 import fase
+import mundo
 
 car.x = (LARGURA_JANELA - car.width) / 2
 car.y = ALTURA_JANELA - car.height + 10
 
 pisca_timer = 0
 opacidade_carro = 255
+
+
+def obter_velocidade_horizontal():
+
+    return VELOCIDADE_CARRO * mundo.obter_multiplicador_velocidade()
+
 
 def carro_fora_da_pista():
 
@@ -25,18 +32,24 @@ def carro_fora_da_pista():
 
     return fora_total >= limite
 
+
 def mover_carro(dt):
 
     global pisca_timer
     global opacidade_carro
 
-    velocidade = VELOCIDADE_CARRO
+    velocidade = obter_velocidade_horizontal()
 
     if fundo.velocidade_fundo <= 0 or fase.fase_concluida:
         return
 
     if fase.desacelerando:
-        fator = max(0.2, fundo.velocidade_fundo / VELOCIDADE_FUNDO_INICIAL)
+
+        fator = max(
+            0.2,
+            fundo.velocidade_fundo / fundo.obter_velocidade_inicial_atual()
+        )
+
         velocidade *= fator
 
     if pressionada(LEFT):
@@ -74,13 +87,13 @@ def mover_carro(dt):
 
         if (
             fundo.velocidade_fundo > VELOCIDADE_REDUZIDA
-            and fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL
+            and fundo.velocidade_fundo < fundo.obter_velocidade_inicial_atual()
         ):
 
             fundo.velocidade_fundo += RECUPERACAO_FORA_PISTA * dt
 
-            if fundo.velocidade_fundo > VELOCIDADE_FUNDO_INICIAL:
-                fundo.velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
+            if fundo.velocidade_fundo > fundo.obter_velocidade_inicial_atual():
+                fundo.velocidade_fundo = fundo.obter_velocidade_inicial_atual()
 
     if (
         fundo.velocidade_fundo < VELOCIDADE_REDUZIDA + 1
@@ -93,6 +106,7 @@ def mover_carro(dt):
 
         pisca_timer = 0
 
+
 def resetar_carro():
 
     global opacidade_carro
@@ -103,6 +117,7 @@ def resetar_carro():
 
     opacidade_carro = 255
     pisca_timer = 0
+
 
 def desenhar_carro():
 

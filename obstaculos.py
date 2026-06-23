@@ -27,6 +27,7 @@ proximo_spawn = random.uniform(
     spawn_max
 )
 
+
 def obter_pedras_mundo():
 
     if mundo.mundo_atual == 1:
@@ -37,6 +38,7 @@ def obter_pedras_mundo():
 
     else:
         return ("sprites/pedraDeserto1.png", "sprites/pedraDeserto2.png")
+
 
 def obter_buraco_mundo():
 
@@ -49,6 +51,7 @@ def obter_buraco_mundo():
     else:
         return "sprites/buracoDeserto.png"
 
+
 def obter_tronco_mundo():
 
     if mundo.mundo_atual == 1:
@@ -59,6 +62,7 @@ def obter_tronco_mundo():
 
     else:
         return "sprites/troncoDeserto.png"
+
 
 def criar_tronco():
 
@@ -77,6 +81,7 @@ def criar_tronco():
         "sprite": obs,
         "tipo": "tronco"
     })
+
 
 def criar_formacao():
 
@@ -114,6 +119,7 @@ def criar_formacao():
                     "tipo": tipo
                 })
 
+
 def obter_hitbox_obstaculo(tipo):
 
     if tipo == "pedra":
@@ -132,6 +138,7 @@ def obter_hitbox_obstaculo(tipo):
         return (90, 25)
 
     return (25, 25)
+
 
 def mover_obstaculos(dt):
 
@@ -210,13 +217,14 @@ def mover_obstaculos(dt):
 
         if (
             not fase.desacelerando
-            and fundo.velocidade_fundo < VELOCIDADE_FUNDO_INICIAL
+            and fundo.velocidade_fundo < fundo.obter_velocidade_inicial_atual()
         ):
 
             fundo.velocidade_fundo += RECUPERACAO_VELOCIDADE * dt
 
-            if fundo.velocidade_fundo > VELOCIDADE_FUNDO_INICIAL:
-                fundo.velocidade_fundo = VELOCIDADE_FUNDO_INICIAL
+            if fundo.velocidade_fundo > fundo.obter_velocidade_inicial_atual():
+                fundo.velocidade_fundo = fundo.obter_velocidade_inicial_atual()
+
 
 def desenhar_obstaculos():
 
@@ -226,6 +234,7 @@ def desenhar_obstaculos():
 
         obs.set_position(round(obs.x), round(obs.y))
         obs.draw()
+
 
 def resetar_obstaculos():
 
