@@ -5,6 +5,7 @@ import mundo
 import timer
 import obstaculos
 import tela_fase
+import som
 
 from sprites import *
 from numeros import *
@@ -105,6 +106,8 @@ def atualizar_fim():
 
         if not space_travado_fim:
 
+            som.tocar_click()
+
             mundo.avancar_fase()
 
             if mundo.jogo_finalizado():
@@ -174,6 +177,8 @@ def atualizar_fim_campeonato():
     if pressionada(SPACE):
 
         if not space_travado_fim_campeonato:
+
+            som.tocar_click()
 
             resetar_jogo_completo()
 

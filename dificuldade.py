@@ -1,6 +1,5 @@
 import fase
 
-
 def obter_nivel():
 
     progresso = fase.obter_progresso()

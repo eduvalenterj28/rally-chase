@@ -12,6 +12,7 @@ from keys import *
 import fundo
 import menu
 import fase
+import som
 
 esc_travado = False
 
@@ -28,9 +29,16 @@ while True:
         if not esc_travado:
 
             if menu.estado == menu.JOGO:
+
+                som.parar_motor()
+                som.pausar_musica_jogo()
+
                 menu.estado = menu.PAUSE
 
             elif menu.estado == menu.PAUSE:
+
+                som.continuar_musica_jogo()
+
                 menu.estado = menu.JOGO
 
             esc_travado = True
@@ -45,6 +53,8 @@ while True:
 
     if menu.estado == menu.MENU:
 
+        som.atualizar_motor(False)
+
         menu.desenhar_menu()
         menu.atualizar_menu()
 
@@ -53,6 +63,8 @@ while True:
     # ======================
 
     elif menu.estado == menu.TELA_FASE:
+
+        som.atualizar_motor(False)
 
         desenhar_tela_fase()
         atualizar_tela_fase(dt)
@@ -70,6 +82,15 @@ while True:
             if fundo.velocidade_fundo <= 0:
                 fundo.velocidade_fundo = 0
                 fase.fase_concluida = True
+
+        # ======================
+        # SOM DO MOTOR
+        # ======================
+
+        if fundo.velocidade_fundo > 0 and not fase.fase_concluida:
+            som.atualizar_motor(True)
+        else:
+            som.atualizar_motor(False)
 
         mover_fundos(dt)
 
@@ -106,6 +127,9 @@ while True:
                 gerar_posicao()
                 fase.resultado_processado = True
 
+            som.parar_motor()
+            som.parar_musica_jogo()
+
             menu.estado = menu.FIM
 
     # ======================
@@ -113,6 +137,8 @@ while True:
     # ======================
 
     elif menu.estado == menu.PAUSE:
+
+        som.atualizar_motor(False)
 
         pause.draw()
 
@@ -122,6 +148,8 @@ while True:
 
     elif menu.estado == menu.FIM:
 
+        som.atualizar_motor(False)
+
         desenhar_fim(janela)
         atualizar_fim()
 
@@ -130,6 +158,8 @@ while True:
     # ======================
 
     elif menu.estado == menu.FIM_CAMPEONATO:
+
+        som.atualizar_motor(False)
 
         desenhar_fim_campeonato()
         atualizar_fim_campeonato()

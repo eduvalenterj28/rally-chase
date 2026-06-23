@@ -3,9 +3,13 @@ from keys import *
 
 import menu
 import mundo
+import som
 
 tempo_tela = 0
 blink_timer = 0
+
+space_travado_tela_fase = False
+
 
 def obter_tela():
 
@@ -58,13 +62,29 @@ def desenhar_tela_fase():
 def atualizar_tela_fase(dt):
 
     global tempo_tela
+    global space_travado_tela_fase
 
     tempo_tela += dt
 
-    if tempo_tela < 0.5:
-        return
-
     if pressionada(SPACE):
 
-        tempo_tela = 0
-        menu.estado = menu.JOGO
+        if (
+            tempo_tela >= 0.5
+            and not space_travado_tela_fase
+        ):
+
+            som.tocar_click()
+            som.tocar_musica_jogo()
+
+            tempo_tela = 0
+            menu.estado = menu.JOGO
+
+            space_travado_tela_fase = True
+
+        else:
+
+            space_travado_tela_fase = True
+
+    else:
+
+        space_travado_tela_fase = False
