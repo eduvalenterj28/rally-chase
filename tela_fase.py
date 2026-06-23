@@ -74,7 +74,6 @@ def atualizar_tela_fase(dt):
         ):
 
             som.tocar_click()
-            som.tocar_musica_jogo()
 
             tempo_tela = 0
             menu.estado = menu.JOGO

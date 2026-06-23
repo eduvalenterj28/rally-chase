@@ -31,13 +31,13 @@ while True:
             if menu.estado == menu.JOGO:
 
                 som.parar_motor()
-                som.pausar_musica_jogo()
+                som.tocar_musica_menu()
 
                 menu.estado = menu.PAUSE
 
             elif menu.estado == menu.PAUSE:
 
-                som.continuar_musica_jogo()
+                som.parar_musica_menu()
 
                 menu.estado = menu.JOGO
 
@@ -53,7 +53,8 @@ while True:
 
     if menu.estado == menu.MENU:
 
-        som.atualizar_motor(False)
+        som.parar_motor()
+        som.tocar_musica_menu()
 
         menu.desenhar_menu()
         menu.atualizar_menu()
@@ -64,7 +65,8 @@ while True:
 
     elif menu.estado == menu.TELA_FASE:
 
-        som.atualizar_motor(False)
+        som.parar_motor()
+        som.tocar_musica_menu()
 
         desenhar_tela_fase()
         atualizar_tela_fase(dt)
@@ -74,6 +76,8 @@ while True:
     # ======================
 
     elif menu.estado == menu.JOGO:
+
+        som.parar_musica_menu()
 
         if fase.desacelerando:
 
@@ -128,7 +132,7 @@ while True:
                 fase.resultado_processado = True
 
             som.parar_motor()
-            som.parar_musica_jogo()
+            som.tocar_musica_menu()
 
             menu.estado = menu.FIM
 
@@ -138,7 +142,8 @@ while True:
 
     elif menu.estado == menu.PAUSE:
 
-        som.atualizar_motor(False)
+        som.parar_motor()
+        som.tocar_musica_menu()
 
         pause.draw()
 
@@ -148,7 +153,8 @@ while True:
 
     elif menu.estado == menu.FIM:
 
-        som.atualizar_motor(False)
+        som.parar_motor()
+        som.tocar_musica_menu()
 
         desenhar_fim(janela)
         atualizar_fim()
@@ -159,7 +165,8 @@ while True:
 
     elif menu.estado == menu.FIM_CAMPEONATO:
 
-        som.atualizar_motor(False)
+        som.parar_motor()
+        som.tocar_musica_menu()
 
         desenhar_fim_campeonato()
         atualizar_fim_campeonato()

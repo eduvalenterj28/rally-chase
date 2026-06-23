@@ -9,24 +9,75 @@ from dificuldade import *
 
 import fundo
 import random
+import som
 
 from formacoes import *
 
+# ======================
+# LISTA DE OBSTÁCULOS
+# ======================
+
 obstaculos = []
 
-tempo_reduzido = 0
-tempo_spawn = 0
+# ======================
+# CONTROLE DE SPAWN
+# ======================
 
+distancia_spawn = 0
+proximo_spawn_distancia = 0
+
+# distância mínima em pixels entre um grupo de obstáculos e outro
+DISTANCIA_MINIMA_ENTRE_SPAWNS = 900
+
+# impede spawn enquanto ainda existe objeto muito perto do topo
+LIMITE_AREA_SPAWN = 250
+
+# margem visual para evitar que sprites grandes encostem uns nos outros
+MARGEM_VISUAL_X = 12
+MARGEM_VISUAL_Y = 12
+
+# ======================
+# CONTROLE DE ERRO
+# ======================
+
+tempo_reduzido = 0
 erros = 0
 cooldown_erro = 0
 
-spawn_min, spawn_max = obter_intervalo_spawn()
 
-proximo_spawn = random.uniform(
-    spawn_min,
-    spawn_max
-)
+# ======================
+# SORTEIO DO PRÓXIMO SPAWN
+# ======================
 
+def sortear_proximo_spawn():
+
+    spawn_min, spawn_max = obter_intervalo_spawn()
+
+    try:
+        velocidade_base = fundo.obter_velocidade_inicial_atual()
+    except:
+        velocidade_base = VELOCIDADE_FUNDO_INICIAL
+
+    distancia_min = spawn_min * velocidade_base
+    distancia_max = spawn_max * velocidade_base
+
+    distancia_sorteada = random.uniform(
+        distancia_min,
+        distancia_max
+    )
+
+    if distancia_sorteada < DISTANCIA_MINIMA_ENTRE_SPAWNS:
+        distancia_sorteada = DISTANCIA_MINIMA_ENTRE_SPAWNS
+
+    return distancia_sorteada
+
+
+proximo_spawn_distancia = sortear_proximo_spawn()
+
+
+# ======================
+# SPRITES POR MUNDO
+# ======================
 
 def obter_pedras_mundo():
 
@@ -64,6 +115,56 @@ def obter_tronco_mundo():
         return "sprites/troncoDeserto.png"
 
 
+# ======================
+# ÁREA DE SPAWN
+# ======================
+
+def area_spawn_livre():
+
+    for item in obstaculos:
+
+        obs = item["sprite"]
+
+        if obs.y < LIMITE_AREA_SPAWN:
+            return False
+
+    return True
+
+
+def retangulos_sobrepostos(a, b):
+
+    a_left = a.x + MARGEM_VISUAL_X
+    a_right = a.x + a.width - MARGEM_VISUAL_X
+    a_top = a.y + MARGEM_VISUAL_Y
+    a_bottom = a.y + a.height - MARGEM_VISUAL_Y
+
+    b_left = b.x + MARGEM_VISUAL_X
+    b_right = b.x + b.width - MARGEM_VISUAL_X
+    b_top = b.y + MARGEM_VISUAL_Y
+    b_bottom = b.y + b.height - MARGEM_VISUAL_Y
+
+    return (
+        a_left < b_right and
+        a_right > b_left and
+        a_top < b_bottom and
+        a_bottom > b_top
+    )
+
+
+def pode_adicionar_na_linha(novo_obstaculo, obstaculos_linha):
+
+    for outro in obstaculos_linha:
+
+        if retangulos_sobrepostos(novo_obstaculo, outro):
+            return False
+
+    return True
+
+
+# ======================
+# CRIAÇÃO DE OBSTÁCULOS
+# ======================
+
 def criar_tronco():
 
     obs = Sprite(obter_tronco_mundo())
@@ -83,9 +184,7 @@ def criar_tronco():
     })
 
 
-def criar_formacao():
-
-    formacao = obter_formacao()
+def escolher_tipo_obstaculo():
 
     pedra1, pedra2 = obter_pedras_mundo()
     buraco = obter_buraco_mundo()
@@ -99,11 +198,20 @@ def criar_formacao():
         (buraco, "buraco")
     ]
 
-    arquivo, tipo = random.choice(tipos)
+    return random.choice(tipos)
+
+
+def criar_formacao():
+
+    formacao = obter_formacao()
 
     y_inicial = -100
 
     for linha in range(len(formacao)):
+
+        obstaculos_linha = []
+
+        arquivo, tipo = escolher_tipo_obstaculo()
 
         for faixa in range(3):
 
@@ -114,11 +222,19 @@ def criar_formacao():
                 obs.x = FAIXAS[faixa] - obs.width / 2
                 obs.y = y_inicial - linha * ESPACAMENTO_Y
 
-                obstaculos.append({
-                    "sprite": obs,
-                    "tipo": tipo
-                })
+                if pode_adicionar_na_linha(obs, obstaculos_linha):
 
+                    obstaculos.append({
+                        "sprite": obs,
+                        "tipo": tipo
+                    })
+
+                    obstaculos_linha.append(obs)
+
+
+# ======================
+# HITBOX
+# ======================
 
 def obter_hitbox_obstaculo(tipo):
 
@@ -140,20 +256,28 @@ def obter_hitbox_obstaculo(tipo):
     return (25, 25)
 
 
+# ======================
+# MOVIMENTO E COLISÃO
+# ======================
+
 def mover_obstaculos(dt):
 
-    global tempo_spawn
-    global proximo_spawn
+    global distancia_spawn
+    global proximo_spawn_distancia
     global tempo_reduzido
     global erros
     global cooldown_erro
 
-    tempo_spawn += dt
     cooldown_erro -= dt
+
+    if fundo.velocidade_fundo > 0 and not fase.desacelerando:
+
+        distancia_spawn += fundo.velocidade_fundo * dt
 
     if (
         fase.obter_porcentagem() < 98
-        and tempo_spawn >= proximo_spawn
+        and distancia_spawn >= proximo_spawn_distancia
+        and area_spawn_livre()
     ):
 
         chance_tronco = obter_chance_tronco()
@@ -163,14 +287,8 @@ def mover_obstaculos(dt):
         else:
             criar_formacao()
 
-        tempo_spawn = 0
-
-        spawn_min, spawn_max = obter_intervalo_spawn()
-
-        proximo_spawn = random.uniform(
-            spawn_min,
-            spawn_max
-        )
+        distancia_spawn = 0
+        proximo_spawn_distancia = sortear_proximo_spawn()
 
     for item in obstaculos[:]:
 
@@ -204,6 +322,8 @@ def mover_obstaculos(dt):
 
         if colisao and cooldown_erro <= 0:
 
+            som.tocar_hit()
+
             tempo_reduzido = TEMPO_REDUZIDO
             fundo.velocidade_fundo = VELOCIDADE_REDUZIDA
 
@@ -211,6 +331,7 @@ def mover_obstaculos(dt):
             cooldown_erro = 1.0
 
     if tempo_reduzido > 0:
+
         tempo_reduzido -= dt
 
     else:
@@ -226,6 +347,10 @@ def mover_obstaculos(dt):
                 fundo.velocidade_fundo = fundo.obter_velocidade_inicial_atual()
 
 
+# ======================
+# DESENHO
+# ======================
+
 def desenhar_obstaculos():
 
     for item in obstaculos:
@@ -236,24 +361,23 @@ def desenhar_obstaculos():
         obs.draw()
 
 
+# ======================
+# RESET
+# ======================
+
 def resetar_obstaculos():
 
-    global tempo_spawn
-    global proximo_spawn
+    global distancia_spawn
+    global proximo_spawn_distancia
     global tempo_reduzido
     global erros
     global cooldown_erro
 
     obstaculos.clear()
 
-    tempo_spawn = 0
+    distancia_spawn = 0
     tempo_reduzido = 0
     erros = 0
     cooldown_erro = 0
 
-    spawn_min, spawn_max = obter_intervalo_spawn()
-
-    proximo_spawn = random.uniform(
-        spawn_min,
-        spawn_max
-    )
+    proximo_spawn_distancia = sortear_proximo_spawn()

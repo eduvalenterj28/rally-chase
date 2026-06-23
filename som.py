@@ -1,210 +1,351 @@
+# ======================
+# SONS DO JOGO
+# ======================
+
 import os
-import pygame
 
-# ============================================================
-# CONFIGURAÇÕES DE ÁUDIO
-# ============================================================
+try:
+    from pygame import mixer
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PASTA_MUSICA = os.path.join(BASE_DIR, "musica")
+    if not mixer.get_init():
+        mixer.init()
 
-ARQUIVO_CLICK = os.path.join(PASTA_MUSICA, "click.wav")
-ARQUIVO_MUSICA_JOGO = os.path.join(PASTA_MUSICA, "musicaJogo.wav")
-ARQUIVO_MOTOR = os.path.join(PASTA_MUSICA, "motor.wav")
+    AUDIO_ATIVO = True
+    print("Audio iniciado com sucesso.")
 
-VOLUME_CLICK = 0.7
-VOLUME_MUSICA = 0.35
+except Exception as erro:
+    AUDIO_ATIVO = False
+    print("Erro ao iniciar audio:", erro)
+
+
+# ======================
+# PASTA DE AUDIO
+# ======================
+
+PASTA_ATUAL = os.path.dirname(os.path.abspath(__file__))
+PASTA_MUSICA = os.path.join(PASTA_ATUAL, "musica")
+
+# ======================
+# ARQUIVOS POSSIVEIS
+# ======================
+
+ARQUIVOS_CLICK = [
+    os.path.join(PASTA_MUSICA, "click.wav"),
+    os.path.join(PASTA_MUSICA, "click.ogg"),
+    os.path.join(PASTA_MUSICA, "click.mp3")
+]
+
+ARQUIVOS_MUSICA_MENU = [
+    os.path.join(PASTA_MUSICA, "musicaJogo.ogg"),
+    os.path.join(PASTA_MUSICA, "musicaJogo.mp3"),
+    os.path.join(PASTA_MUSICA, "musicaJogo.wav")
+]
+
+ARQUIVOS_MOTOR = [
+    os.path.join(PASTA_MUSICA, "motor.wav"),
+    os.path.join(PASTA_MUSICA, "motor.ogg"),
+    os.path.join(PASTA_MUSICA, "motor.mp3")
+]
+
+ARQUIVOS_HIT = [
+    os.path.join(PASTA_MUSICA, "hit.wav"),
+    os.path.join(PASTA_MUSICA, "hit.ogg"),
+    os.path.join(PASTA_MUSICA, "hit.mp3")
+]
+
+# ======================
+# VOLUMES
+# ======================
+
+VOLUME_CLICK = 0.8
+VOLUME_MUSICA_MENU = 0.45
 VOLUME_MOTOR = 0.35
+VOLUME_HIT = 0.8
 
-som_click = None
-som_motor = None
-canal_motor = None
+# ======================
+# CONTROLE INTERNO
+# ======================
 
-audio_inicializado = False
-musica_iniciada = False
+click = None
+motor = None
+hit = None
+
+musica_menu_tocando = False
+motor_tocando = False
 
 
-# ============================================================
-# INICIALIZAÇÃO
-# ============================================================
+def encontrar_arquivo(lista_arquivos):
 
-def inicializar_audio():
-    global som_click, som_motor, canal_motor, audio_inicializado
+    for caminho in lista_arquivos:
 
-    if audio_inicializado:
+        if os.path.exists(caminho):
+            return caminho
+
+    print("Nenhum arquivo de audio encontrado nesta lista:")
+
+    for caminho in lista_arquivos:
+        print(caminho)
+
+    return None
+
+
+# ======================
+# CLICK
+# ======================
+
+def carregar_click():
+
+    global click
+
+    if not AUDIO_ATIVO:
+        return
+
+    if click is not None:
+        return
+
+    caminho_click = encontrar_arquivo(ARQUIVOS_CLICK)
+
+    if caminho_click is None:
         return
 
     try:
-        if not pygame.mixer.get_init():
-            pygame.mixer.init()
+        click = mixer.Sound(caminho_click)
+        click.set_volume(VOLUME_CLICK)
 
-        pygame.mixer.set_num_channels(8)
-
-        som_click = carregar_som(ARQUIVO_CLICK)
-        som_motor = carregar_som(ARQUIVO_MOTOR)
-
-        if som_click:
-            som_click.set_volume(VOLUME_CLICK)
-
-        if som_motor:
-            som_motor.set_volume(VOLUME_MOTOR)
-
-        canal_motor = pygame.mixer.Channel(1)
-
-        audio_inicializado = True
+        print("Click carregado com sucesso:")
+        print(caminho_click)
 
     except Exception as erro:
-        print("[ERRO] Não foi possível inicializar o áudio.")
+        click = None
+
+        print("Erro ao carregar click:")
+        print(caminho_click)
         print(erro)
 
-
-def carregar_som(caminho):
-    if not os.path.exists(caminho):
-        print(f"[AVISO] Arquivo de som não encontrado: {caminho}")
-        return None
-
-    try:
-        return pygame.mixer.Sound(caminho)
-    except Exception as erro:
-        print(f"[ERRO] Não foi possível carregar o som: {caminho}")
-        print(erro)
-        return None
-
-
-# ============================================================
-# CLICK
-# ============================================================
 
 def tocar_click():
-    inicializar_audio()
 
-    if som_click:
-        som_click.play()
-
-
-# ============================================================
-# MÚSICA DE FUNDO
-# ============================================================
-
-def iniciar_musica_jogo():
-    global musica_iniciada
-
-    inicializar_audio()
-
-    if musica_iniciada:
+    if not AUDIO_ATIVO:
         return
 
-    if not os.path.exists(ARQUIVO_MUSICA_JOGO):
-        print(f"[AVISO] Música do jogo não encontrada: {ARQUIVO_MUSICA_JOGO}")
+    carregar_click()
+
+    try:
+        if click is not None:
+            click.play()
+
+    except Exception as erro:
+        print("Erro ao tocar click:", erro)
+
+
+# ======================
+# HIT / COLISÃO
+# ======================
+
+def carregar_hit():
+
+    global hit
+
+    if not AUDIO_ATIVO:
+        return
+
+    if hit is not None:
+        return
+
+    caminho_hit = encontrar_arquivo(ARQUIVOS_HIT)
+
+    if caminho_hit is None:
         return
 
     try:
-        pygame.mixer.music.load(ARQUIVO_MUSICA_JOGO)
-        pygame.mixer.music.set_volume(VOLUME_MUSICA)
-        pygame.mixer.music.play(-1)
-        musica_iniciada = True
+        hit = mixer.Sound(caminho_hit)
+        hit.set_volume(VOLUME_HIT)
+
+        print("Hit carregado com sucesso:")
+        print(caminho_hit)
 
     except Exception as erro:
-        print("[ERRO] Não foi possível iniciar a música do jogo.")
+        hit = None
+
+        print("Erro ao carregar hit:")
+        print(caminho_hit)
         print(erro)
+
+
+def tocar_hit():
+
+    if not AUDIO_ATIVO:
+        return
+
+    carregar_hit()
+
+    try:
+        if hit is not None:
+            hit.play()
+
+    except Exception as erro:
+        print("Erro ao tocar hit:", erro)
+
+
+# ======================
+# MUSICA DOS MENUS
+# ======================
+
+def tocar_musica_menu():
+
+    global musica_menu_tocando
+
+    if not AUDIO_ATIVO:
+        return
+
+    if musica_menu_tocando:
+        return
+
+    caminho_musica = encontrar_arquivo(ARQUIVOS_MUSICA_MENU)
+
+    if caminho_musica is None:
+        return
+
+    try:
+        mixer.music.load(caminho_musica)
+        mixer.music.set_volume(VOLUME_MUSICA_MENU)
+        mixer.music.play(-1)
+
+        musica_menu_tocando = True
+
+        print("Musica dos menus tocando:")
+        print(caminho_musica)
+
+    except Exception as erro:
+        musica_menu_tocando = False
+
+        print("Erro ao tocar musica dos menus:")
+        print(caminho_musica)
+        print(erro)
+
+
+def parar_musica_menu():
+
+    global musica_menu_tocando
+
+    if not AUDIO_ATIVO:
+        return
+
+    if not musica_menu_tocando:
+        return
+
+    try:
+        mixer.music.stop()
+
+    except Exception as erro:
+        print("Erro ao parar musica dos menus:", erro)
+
+    musica_menu_tocando = False
+
+
+# ======================
+# COMPATIBILIDADE COM NOMES ANTIGOS
+# ======================
+
+def tocar_musica_jogo():
+
+    tocar_musica_menu()
 
 
 def parar_musica_jogo():
-    global musica_iniciada
 
-    if pygame.mixer.get_init():
-        pygame.mixer.music.stop()
-
-    musica_iniciada = False
+    parar_musica_menu()
 
 
 def pausar_musica_jogo():
-    if pygame.mixer.get_init():
-        pygame.mixer.music.pause()
+
+    parar_musica_menu()
 
 
-def retomar_musica_jogo():
-    if pygame.mixer.get_init():
-        pygame.mixer.music.unpause()
+def continuar_musica_jogo():
+
+    tocar_musica_menu()
 
 
-# ============================================================
-# SOM DO MOTOR
-# ============================================================
+# ======================
+# MOTOR DO CARRO
+# ======================
 
-def tocar_motor():
-    inicializar_audio()
+def carregar_motor():
 
-    if not som_motor or not canal_motor:
+    global motor
+
+    if not AUDIO_ATIVO:
         return
 
-    if not canal_motor.get_busy():
-        canal_motor.play(som_motor, loops=-1)
+    if motor is not None:
+        return
+
+    caminho_motor = encontrar_arquivo(ARQUIVOS_MOTOR)
+
+    if caminho_motor is None:
+        return
+
+    try:
+        motor = mixer.Sound(caminho_motor)
+        motor.set_volume(VOLUME_MOTOR)
+
+        print("Motor carregado com sucesso:")
+        print(caminho_motor)
+
+    except Exception as erro:
+        motor = None
+
+        print("Erro ao carregar motor:")
+        print(caminho_motor)
+        print(erro)
+
+
+def tocar_motor():
+
+    global motor_tocando
+
+    if not AUDIO_ATIVO:
+        return
+
+    if motor_tocando:
+        return
+
+    carregar_motor()
+
+    try:
+        if motor is not None:
+            motor.play(-1)
+            motor_tocando = True
+
+    except Exception as erro:
+        motor_tocando = False
+        print("Erro ao tocar motor:", erro)
 
 
 def parar_motor():
-    if canal_motor and canal_motor.get_busy():
-        canal_motor.stop()
+
+    global motor_tocando
+
+    if not AUDIO_ATIVO:
+        return
+
+    if not motor_tocando:
+        return
+
+    try:
+        if motor is not None:
+            motor.stop()
+
+    except Exception as erro:
+        print("Erro ao parar motor:", erro)
+
+    motor_tocando = False
 
 
-def atualizar_som_motor(carro_andando, jogo_pausado=False, tela_atual="jogo"):
-    motor_deve_tocar = (
-        carro_andando
-        and not jogo_pausado
-        and tela_atual == "jogo"
-    )
+def atualizar_motor(carro_andando):
 
-    if motor_deve_tocar:
+    if carro_andando:
         tocar_motor()
     else:
         parar_motor()
-
-
-# ============================================================
-# PAUSE / RETOMADA GERAL
-# ============================================================
-
-def pausar_audio_jogo():
-    pausar_musica_jogo()
-    parar_motor()
-
-
-def retomar_audio_jogo():
-    retomar_musica_jogo()
-
-
-def parar_todos_os_sons():
-    parar_motor()
-    parar_musica_jogo()
-
-
-# ============================================================
-# FUNÇÕES DE COMPATIBILIDADE COM SEU CÓDIGO ATUAL
-# ============================================================
-
-def atualizar_motor(carro_andando, jogo_pausado=False, tela_atual="jogo"):
-    atualizar_som_motor(
-        carro_andando=carro_andando,
-        jogo_pausado=jogo_pausado,
-        tela_atual=tela_atual
-    )
-
-
-def tocar_musica_jogo():
-    iniciar_musica_jogo()
-
-
-def tocar_musica():
-    iniciar_musica_jogo()
-
-
-def parar_musica():
-    parar_musica_jogo()
-
-
-def pausar_musica():
-    pausar_musica_jogo()
-
-
-def retomar_musica():
-    retomar_musica_jogo()
